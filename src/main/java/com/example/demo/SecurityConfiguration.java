@@ -15,7 +15,9 @@ import javax.sql.DataSource;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests().anyRequest().authenticated()
+        httpSecurity.authorizeRequests()
+                .antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/**").hasAnyRole("ADMIN", "USER")
                 .and()
                 .formLogin()
                 .loginPage("/login").permitAll();
@@ -37,6 +39,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.jdbcAuthentication()
                 .dataSource(dataSource)
                 .withDefaultSchema()
+                .withUser("admin").password(passwordEncoder().encode("admin")).roles("ADMIN", "USER")
+                .and()
                 .withUser("user").password(passwordEncoder().encode("user")).roles("USER");
 
     }
