@@ -2,6 +2,9 @@ package com.example.demo;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="user_table")
@@ -11,18 +14,25 @@ public class User {
     private long id;
 
     @Column (name="username")
+    @Size(min=3)
     private String username;
 
     @Column (name="email")
+    @NotEmpty
+    @NotNull
     private String email;
 
     @Column (name="password")
     private String password;
 
     @Column (name="first_name")
+    @NotEmpty
+    @NotNull
     private String firstName;
 
     @Column (name="last_name")
+    @NotEmpty
+    @NotNull
     private String lastName;
 
     @Column (name="enabled")
@@ -96,4 +106,10 @@ public class User {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public void clearPassword() {
+        this.password = "";
+    }
+
+
 }

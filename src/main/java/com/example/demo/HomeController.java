@@ -3,10 +3,16 @@ package com.example.demo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.Valid;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 public class HomeController {
@@ -33,6 +39,9 @@ public class HomeController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    RoleRepository roleRepository;
+
     @RequestMapping("/secure")
     public String secure(Principal principal, Model model){
         String username = principal.getName();
@@ -40,4 +49,31 @@ public class HomeController {
         return "secure";
     }
 
+    @GetMapping("/register")
+    public String showRegisterationPage(Model model){
+        User user = new User();
+        model.addAttribute("user", user);
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String processRegisterationPage(@Valid @ModelAttribute("user") User user,
+                                           BindingResult result, Model model){
+
+        if (result.hasErrors()) {
+            user.clearPassword();
+            model.addAttribute("user", user);
+            return "register";
+        }
+        else {
+            model.addAttribute("user", user);
+            model.addAttribute("message", "New user account created");
+            user.setEnabled(true);
+            userRepository.save(user);
+
+            Role role = new Role(user.getUsername(), "ROLE_USER");
+            roleRepository.save(role);
+            return "redirect:/index";
+        }
+    }
 }
