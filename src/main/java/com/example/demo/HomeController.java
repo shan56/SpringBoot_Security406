@@ -56,7 +56,7 @@ public class HomeController {
         return "register";
     }
 
-    @PostMapping("/register")
+    @PostMapping("/processregister")
     public String processRegisterationPage(@Valid @ModelAttribute("user") User user,
                                            BindingResult result, Model model){
 
@@ -73,7 +73,7 @@ public class HomeController {
 
             Role role = new Role(user.getUsername(), "ROLE_USER");
             roleRepository.save(role);
-            return "index";
+            return "redirect:/";
         }
     }
 }
